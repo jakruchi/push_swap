@@ -6,7 +6,7 @@
 /*   By: jankruchina <jankruchina@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 15:14:08 by jankruchina       #+#    #+#             */
-/*   Updated: 2025/04/10 21:03:34 by jankruchina      ###   ########.fr       */
+/*   Updated: 2025/04/12 14:25:00 by jankruchina      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -457,6 +457,27 @@ void mergeSort_from_INTERNET(int arr[], int l, int r) {
   }
 }
 
+void	quick_sort(int *numbers, int size)
+{
+	if (size < 2)
+		return;
+	int	*pivot = &numbers[size - 1];
+	int	i = 0;
+	int	j = 0;
+	while (i < size - 1)
+	{
+		if (numbers[i] < *pivot)
+		{
+			swap(&numbers[j], &numbers[i]);
+			j++;
+		}
+		i++;
+	}
+	swap(&numbers[j], pivot);
+	quick_sort(numbers, size - (size - j));
+	quick_sort(&numbers[j], size - j);
+}
+
 int	main(int argc, char **argv)
 {
 	struct timespec start, end;
@@ -480,12 +501,14 @@ int	main(int argc, char **argv)
 	// selectionSort_from_INTERNET(array, argc - 1);
 	// insertionSort_from_INTERNET(array, argc - 1);
 	// mergeSort_from_INTERNET(array, 0, argc - 2);
+
 	// stupid_bubble_sort(array, argc - 1);
 	// less_stupid_bubble_sort(array, argc - 1);
 	// bubble_sort(array, argc - 1);
 	// selection_sort(array, argc - 1);
 	// insertion_sort(array, argc - 1);
 	// merge_sort(array, 0, argc - 2);
+	quick_sort(array, argc - 1);
     clock_gettime(CLOCK_MONOTONIC, &end);
     double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 	printf("-----------------------done-----------------------\n");
@@ -495,14 +518,16 @@ int	main(int argc, char **argv)
 	printf("optimized bubble sort (NET):	1204 comparisons in 0.0079, 0.0060, 0.0061 seconds\n");
 	printf("selection sort (NET):		1225 comparisons in 0.0046, 0.0043, 0.0043 seconds\n");
 	printf("insertion sort (NET):		 554 comparisons in 0.0027, 0.0029, 0.0025 seconds\n");
-	printf("insertion sort (NET):		 xxx comparisons in 0.0003, 0.0002, 0.0002 seconds\n");
+	printf("merge sort (NET):		 xxx comparisons in 0.0003, 0.0002, 0.0002 seconds\n");
 	printf("stupid bubble sort:		2450 comparisons in 0.0095, 0.0120, 0.0103 seconds\n");
 	printf("less stupid bubble sort:	2107 comparisons in 0.0113, 0.0113, 0.0111 seconds\n");
 	printf("bubble sort:			1204 comparisons in 0.0059, 0.0069, 0.0070 seconds\n");
 	printf("selection sort:			1225 comparisons in 0.0045, 0.0042, 0.0036 seconds\n");
 	printf("insertion sort:			 554 comparisons in 0.0025, 0.0024, 0.0024 seconds\n");
 	printf("merge sort:			 xxx comparisons in 0.0002, 0.0002, 0.0003 seconds\n");
+	printf("quick sort:			 xxx comparisons in 0.0002, 0.0002, 0.0002 seconds\n");
 	printf("jeste vyzkouset v linuxu s valgrindem kvuli space komplexity\n");
+	printf("jeste vyzkouset quick sort from the internet\n");
 	// printf("i run.\n");
 	return (0);
 }

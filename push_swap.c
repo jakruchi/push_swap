@@ -5,204 +5,39 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jankruchina <jankruchina@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/04 13:47:32 by jankruchina       #+#    #+#             */
-/*   Updated: 2025/04/07 21:25:22 by jankruchina      ###   ########.fr       */
+/*   Created: 2025/04/19 14:45:33 by jankruchina       #+#    #+#             */
+/*   Updated: 2025/04/21 18:38:28 by jankruchina      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-t_list	*ft_lstnew(void *content)
+int	ft_safe_atoi(const char *str, int *error)
 {
-	t_list	*lst;
-
-	lst = (t_list *)malloc(sizeof(t_list));
-	if (lst == NULL)
-		return (NULL);
-	lst->content = content;
-	lst->next = NULL;
-	return (lst);
-}
-
-void	ft_lstadd_front(t_list **lst, t_list *new)
-{
-	new->next = *lst;
-	*lst = new;
-}
-
-int	ft_lstsize(t_list *lst)
-{
-	int	count;
-
-	count = 0;
-	while (lst != NULL)
-	{
-		lst = lst->next;
-		count++;
-	}
-	return (count);
-}
-
-t_list	*ft_lstlast(t_list *lst)
-{
-	while (lst->next != NULL)
-		lst = lst->next;
-	return (lst);
-}
-
-void	ft_lstadd_back(t_list **lst, t_list *new)
-{
-	t_list	*node;
-
-	node = *lst;
-	while (node->next != NULL)
-		node = node->next;
-	node->next = new;
-}
-
-void ft_lstdelone(t_list *lst, void (*del)(void*))
-{
-	del(lst->content);
-	free(lst);
-}
-
-void	delete(void *content)
-{
-	free(content);
-}
-
-void ft_lstclear(t_list **lst, void (*del)(void*))
-{
-	t_list	*next_node;
-
-	while (*lst != NULL)
-	{
-		next_node = (*lst)->next;
-		del((*lst)->content);
-		free(*lst);
-		*lst = next_node;
-	}
-	*lst = NULL;
-}
-
-void	ft_lstiter(t_list *lst, void (*f)(void *))
-{
-	while (lst)
-	{
-		f(lst->content);
-		lst = lst->next;
-	}
-}
-
-int	is_sorted(t_list *lst)
-{
-	if (lst == NULL)
-		return (0);
-	while (lst)
-	{
-
-		if (lst->next)
-		{
-			if (*(int *)lst->content > *(int *)lst->next->content)
-				return (0);
-		}
-		lst = lst->next;
-	}
-	return (1);
-}
-
-int	is_reversed_sorted(t_list *lst)
-{
-	if (lst == NULL)
-		return (1);
-	while (lst)
-	{
-
-		if (lst->next)
-		{
-			if (*(int *)lst->content < *(int *)lst->next->content)
-				return (0);
-		}
-		lst = lst->next;
-	}
-	return (1);
-}
-
-void	print_list(void *content)
-{
-	printf("%d\n", *(int *)content);
-}
-
-void	add_5(void *content)
-{
-	*(int *)content += 5;
-}
-
-void	multiply_2(void *content)
-{
-	*(int *)content *= 2;
-}
-
-t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
-{
-	t_list	*new_lst;
-	t_list	*new_node;
-	t_list	*previous_node;
-
-	new_lst = NULL;
-	previous_node = NULL;
-	while (lst)
-	{
-		new_node = ft_lstnew(f(lst->content));
-		if (new_node == NULL)
-		{
-			ft_lstclear(&new_lst, del);
-			return (NULL);
-		}
-		if (previous_node != NULL)
-			previous_node->next = new_node;
-		else
-			new_lst = new_node;
-		previous_node = new_node;
-		lst = lst->next;
-	}
-	return (new_lst);
-}
-
-void	*add_30(void *content)
-{
-	int	*new_content;
-
-	new_content = (int *)malloc(sizeof(int));
-	if (new_content == NULL)
-		return (NULL);
-	*new_content = *(int *)content + 30;
-	return ((void *)new_content);
-}
-
-int	ft_atoi(const char *nptr)
-{
-	size_t	i;
-	int		result;
-	int		sign;
+	long long int	result;
+	int				sign;
 
 	result = 0;
 	sign = 1;
-	i = 0;
-	while (nptr[i] == ' ' || (nptr[i] >= '\t' && nptr[i] <= '\r'))
-		i++;
-	if (nptr[i] == '+' || nptr[i] == '-')
+	*error = 0;
+	while (*str == ' ' || (*str >= '\t' && *str <= '\r'))
+		str++;
+	if (*str == '+' || *str == '-')
 	{
-		if (nptr[i] == '-')
+		if (*str == '-')
 			sign = -1;
-		i++;
+		str++;
 	}
-	while (nptr[i] >= '0' && nptr[i] <= '9')
+	while (*str >= '0' && *str <= '9')
 	{
-		result = (result * 10) + (nptr[i] - 48);
-		i++;
+		result = (result * 10) + (*str - '0');
+		if ((result * sign) > 2147483647 || ((result * sign) < -2147483648))
+			return (*error = 1, 0);
+		str++;
 	}
-	return (result * sign);
+	if (*str != '\0')
+		*error = 1;
+	return ((int)(result * sign));
 }
 
 void	print_both_lists(t_list *A, t_list *B)
@@ -219,7 +54,7 @@ void	print_both_lists(t_list *A, t_list *B)
 		{
 			while (size_A != size_B)
 			{
-				printf("%6d\n", *(int *)A->content);
+				printf("%6d\n", *(int *)A->data);
 				A = A->next;
 				size_A--;
 			}
@@ -228,16 +63,15 @@ void	print_both_lists(t_list *A, t_list *B)
 		{
 			while (size_B != size_A)
 			{
-				printf("       %6d\n", *(int *)B->content);
+				printf("       %6d\n", *(int *)B->data);
 				B = B->next;
 				size_B--;
 			}
 		}
 	}
-	// printf("bigger one starts with: %d\n", *(int *)bigger_one->content);
 	while (size_A > 0)
 	{
-		printf("%6d %6d\n", *(int *)A->content, *(int *)B->content);
+		printf("%6d %6d\n", *(int *)A->data, *(int *)B->data);
 		A = A->next;
 		B = B->next;
 		size_A--;
@@ -245,471 +79,598 @@ void	print_both_lists(t_list *A, t_list *B)
 	printf("%6c %6c\n", 'a', 'b');
 }
 
-void	swap(t_list **list, char c)
+void	print_list(t_list *list)
 {
-	int	temp;
-
-	if (list == NULL)
-		return;
-	if (*list == NULL)
-		return;
-	if ((*list)->next == NULL)
-		return;
-	temp = *(int *)(*list)->content;
-	*(int *)(*list)->content = *(int *)(*list)->next->content;
-	*(int *)(*list)->next->content = temp;
-	if (c == 'a' || c == 'b')
-		printf("s%c\n", c);
-}
-
-void	swap_ss(t_list **A, t_list **B, char c)
-{
-	if (A == NULL || B == NULL)
-		return;
-	if (*A == NULL || *B == NULL)
-		return;
-	if ((*A)->next == NULL || (*B)->next == NULL)
-		return;
-	swap(A, c);
-	swap(B, c);
-	printf("s%c\n", c);
-}
-
-void	push(t_list **from, t_list **in, char c)
-{
-	t_list	*temp;
-
-	if (from == NULL)
-		return;
-	if (*from == NULL)
-		return;
-	if (in == NULL)
-		return;
-	temp = (*from)->next;
-	ft_lstadd_front(in, *from);
-	*from = temp;
-	printf("p%c\n", c);
-}
-
-void	rotate(t_list **list, char c)
-{
-	t_list	*second_node;
-	t_list	*last_node;
-
-	if (list == NULL)
-		return;
-	if (*list == NULL)
-		return;
-	if ((*list)->next == NULL)
-		return;
-	second_node = (*list)->next;
-	last_node = ft_lstlast(*list);
-	(*list)->next = NULL;
-	last_node->next = *list;
-	*list = second_node;
-	if (c == 'a' || c == 'b')
-		printf("r%c\n", c);
-}
-
-void	rotate_rr(t_list **list_A, t_list **list_B, char c)
-{
-	rotate(list_A, c);
-	rotate(list_B, c);
-	printf("r%c\n", c);
-}
-
-void	reverse_rotate(t_list **list, char c)
-{
-	t_list	*last_node;
-	t_list	*second_to_last_node;
-	int		size;
-
-	if (list == NULL)
-		return;
-	if (*list == NULL)
-		return;
-	if ((*list)->next == NULL)
-		return;
-	last_node = ft_lstlast(*list);
-	size = ft_lstsize(*list);
-	second_to_last_node = *list;
-	while (size > 2)
-	{
-		second_to_last_node = second_to_last_node->next;
-		size--;
-	}
-	last_node->next = *list;
-	*list = last_node;
-	second_to_last_node->next = NULL;
-
-	if (c == 'a' || c == 'b')
-		printf("rr%c\n", c);
-}
-
-void	reverse_rotate_rr(t_list **list_A, t_list **list_B, char c)
-{
-	reverse_rotate(list_A, c);
-	reverse_rotate(list_B, c);
-	printf("rr%c\n", c);
-}
-
-int	*find_lowest_number(t_list *list, int *lowest)
-{
-	if (list == NULL)
-		return (NULL);
-	lowest = list->content;
-	if (list->next)
-		list = list->next;
 	while (list)
 	{
-		if (*lowest > *(int *)list->content)
-			lowest = list->content;
+		printf("%d\n", *(list->data));
 		list = list->next;
 	}
-	return (lowest);
+	printf("list\n");
 }
 
-int	*find_highest_number(t_list *list, int *highest)
+int	is_unique(t_list *list, int	value)
 {
-
-	if (list == NULL)
-		return (NULL);
-	highest = list->content;
-	if (list->next)
-		list = list->next;
 	while (list)
 	{
-		if (*highest < *(int *)list->content)
-			highest = list->content;
+		if (*(list->data) == value)
+			return (0);
 		list = list->next;
 	}
-	return (highest);
+	return (1);
 }
 
-void	push_a_all(t_list **list_A, t_list **list_B)
+t_list	*init_list(int argc, char **argv)
 {
-	while (*list_B)
-	{
-		push(list_B, list_A, 'a');
-	}
-}
+	t_list	*list = NULL;
+	t_list	*previous_node = NULL;
+	int		*number;
+	int		i;
+	int		error;
 
-int	*find_lowest(t_list *A, t_list *B, int *num_ptr)
-{
-	t_list	*last;
-
-	if (A)
-		num_ptr = (int *)A->content;
-	else
-		num_ptr = (int *)B->content;
-	if (*num_ptr > *(int *)A->content)
-		num_ptr = (int *)A->content;
-	if (B)
+	i = 1;
+	while (i < argc)
 	{
-		if (*num_ptr > *(int *)B->content)
-		num_ptr = (int *)B->content;
-	}
-	if (A->next)
-	{
-		if (*num_ptr > *(int *)A->next->content)
-			num_ptr = (int *)A->next->content;
-	}
-	if (B->next)
-	{
-		if (*num_ptr > *(int *)B->next->content)
-			num_ptr = (int *)B->next->content;
-	}
-	last = ft_lstlast(A);
-	if (last)
-	{
-		if (*num_ptr > *(int *)last->content)
-			num_ptr = (int *)last->content;
-	}
-	last = ft_lstlast(B);
-	if (last)
-	{
-		if (*num_ptr > *(int *)last->content)
-			num_ptr = (int *)last->content;
-	}
-	return (num_ptr);
-}
-
-int	*find_highest(t_list *A, t_list *B, int *num_ptr)
-{
-	t_list	*last;
-
-	if (A)
-		num_ptr = (int *)A->content;
-	else
-		num_ptr = (int *)B->content;
-	if (*num_ptr < *(int *)A->content)
-		num_ptr = (int *)A->content;
-	if (B)
-	{
-		if (*num_ptr < *(int *)B->content)
-		num_ptr = (int *)B->content;
-	}
-
-	if (A->next)
-	{
-		if (*num_ptr < *(int *)A->next->content)
-			num_ptr = (int *)A->next->content;
-	}
-	if (B->next)
-	{
-		printf("i run.\n");
-		if (*num_ptr < *(int *)B->next->content)
-			num_ptr = (int *)B->next->content;
-	}
-
-	last = ft_lstlast(A);
-	if (last)
-	{
-		if (*num_ptr < *(int *)last->content)
-			num_ptr = (int *)last->content;
-	}
-	last = ft_lstlast(B);
-	if (last)
-	{
-		if (*num_ptr < *(int *)last->content)
-			num_ptr = (int *)last->content;
-	}
-	return (num_ptr);
-}
-
-int	find_possition(t_list *list, int *lowest)
-{
-	int	count;
-
-	count = 0;
-	if (lowest == NULL)
-		return (count);
-	while (list)
-	{
-		count++;
-		if (*lowest == *(int *)list->content)
-			break;
-		list = list->next;
-	}
-	return (count);
-}
-
-int	get_sum(t_list *list)
-{
-	int	sum;
-
-	sum = 0;
-	while (list)
-	{
-		sum += *(int *)list->content;
-		list = list->next;
-	}
-	return (sum);
-}
-
-void	print_array(int *array, int size)
-{
-	int j = 0;
-	while (j < size)
-	{
-		printf("%d ", array[j]);
-		j++;
-	}
-}
-
-void sort_array(int *array, int size)
-{
-	int	not_sorted;
-	int	i;
-	int	temp;
-
-	if (array == NULL)
-		return;
-	not_sorted = 1;
-	while (not_sorted) // dokud je zapnuty flag, ze neni hotovo
-	{
-		not_sorted = 0;
-		i = 0;
-		while (i < size - 1) // nejsem na predposlednim elementu
+		number = (int *)malloc(sizeof(int));
+		if (number == NULL)
 		{
-			if (array[i] > array[i + 1]) // kdyz aktualni element je vetsi nez element[+1]
+			ft_lstclear(&list, &delete);
+			write(STDOUT_FILENO, "Malloc failed.\n", 15);
+			exit(EXIT_FAILURE);
+		}
+		*number = ft_safe_atoi(argv[i], &error);
+		if (error == 1)
+		{
+			free(number);
+			ft_lstclear(&list, &delete);
+			write(STDOUT_FILENO, "Wrong number format.\n", 21);
+			exit(EXIT_FAILURE);
+		}
+		if (is_unique(list, *number) == 0)
+		{
+			free(number);
+			ft_lstclear(&list, &delete);
+			write(STDOUT_FILENO, "Number is not unique.\n", 22);
+			exit(EXIT_FAILURE);
+		}
+		if (previous_node == NULL)
+		{
+			list = ft_lstnew(number);
+			if (list == NULL)
 			{
-				temp = array[i];
-				array[i] = array[i + 1];
-				array[i + 1] = temp;
-				not_sorted = 1;
+				free(number);
+				write(STDOUT_FILENO, "Malloc failed.\n", 15);
+				exit(EXIT_FAILURE);
 			}
-			i++;
+			previous_node = list;
+		}
+		else
+		{
+			previous_node->next = ft_lstnew(number);
+			if (previous_node->next == NULL)
+			{
+				free(number);
+				ft_lstclear(&list, &delete);
+				write(STDOUT_FILENO, "Malloc failed.\n", 15);
+				exit(EXIT_FAILURE);
+			}
+			previous_node = previous_node->next;
+		}
+		i++;
+	}
+	return (list);
+}
+
+t_stats	*init_stats(t_list *stack_a, int list_size)
+{
+	t_stats	*stats;
+	t_stack	*stats_a;
+	t_stack	*stats_b;
+
+	stats = (t_stats *)malloc(sizeof(t_stats));
+	if (stats == NULL)
+	{
+		ft_lstclear(&stack_a, &delete);
+		write(STDOUT_FILENO, "Malloc failed.\n", 15);
+		exit(EXIT_FAILURE);
+	}
+	stats_b = (t_stack *)malloc(sizeof(t_stack));
+	if (stats_b == NULL)
+	{
+		free(stats);
+		ft_lstclear(&stack_a, &delete);
+		write(STDOUT_FILENO, "Malloc failed.\n", 15);
+		exit(EXIT_FAILURE);
+	}
+	stats->b = stats_b;
+	stats_a = (t_stack *)malloc(sizeof(t_stack));
+	if (stats_a == NULL)
+	{
+		free(stats->b);
+		free(stats);
+		ft_lstclear(&stack_a, &delete);
+		write(STDOUT_FILENO, "Malloc failed.\n", 15);
+		exit(EXIT_FAILURE);
+	}
+	stats->a = stats_a;
+	stats->a->max = *(stack_a->data);
+	stats->a->min = *(stack_a->data);
+	while (stack_a)
+	{
+		if (*(stack_a->data) > stats->a->max)
+			stats->a->max = *(stack_a->data);
+		if (*(stack_a->data) < stats->a->min)
+			stats->a->min = *(stack_a->data);
+		stack_a = stack_a->next;
+	}
+	stats->b->size = 0;
+	stats->a->size = list_size;
+	return (stats);
+}
+void	update_stats(t_list *a, t_list *b, t_stats *stats)
+{
+	int	size;
+
+	if (a == NULL)
+		printf("a is null.\n");
+	if (a->data == NULL)
+		printf("its null.\n");
+	stats->a->max = *(a->data);
+	stats->a->min = *(a->data);
+	stats->a->size = 0;
+	size = 0;
+	while (a)
+	{
+		if (*(a->data) > stats->a->max)
+			stats->a->max = *(a->data);
+		if (*(a->data) < stats->a->min)
+			stats->a->min = *(a->data);
+		a = a->next;
+		size++;
+	}
+	stats->a->size = size;
+	if (b)
+	{
+		stats->b->max = *(b->data);
+		stats->b->min = *(b->data);
+		stats->b->size = 0;
+		size = 0;
+		while (b)
+		{
+			if (*(b->data) > stats->b->max)
+				stats->b->max = *(b->data);
+			if (*(b->data) < stats->b->min)
+				stats->b->min = *(b->data);
+			b = b->next;
+			size++;
+		}
+		stats->b->size = size;
+		printf(" max: a: %d, b: %d\n", stats->a->max, stats->b->max);
+		printf(" min: a: %d, b: %d\n", stats->a->min, stats->b->min);
+		printf("size: a: %d, b: %d\n", stats->a->size, stats->b->size);
+	}
+}
+
+int	is_sorted(t_list *lst)
+{
+	if (lst == NULL)
+		return (0);
+	while (lst)
+	{
+
+		if (lst->next)
+		{
+			if (*lst->data > *lst->next->data)
+				return (0);
+		}
+		lst = lst->next;
+	}
+	return (1);
+}
+
+int	calculate_moves_in_a(t_list *node_to_check, t_stats *stats)
+{
+	static int	moves_in_stack_a;
+	static int	i;
+
+	i++;
+	if (((stats->a->size / 2) + 1) >= i)
+		moves_in_stack_a++;
+	else if (((stats->a->size / 2) + 2) >= i && stats->a->size % 2 != 0)
+		;
+	else // for performance move this in front of else if
+		moves_in_stack_a--;
+	if (node_to_check->next == NULL)
+	{
+		moves_in_stack_a = 0;
+		i = 0;
+		return (2);
+	}
+	return (moves_in_stack_a);
+}
+
+int	calculate_moves_in_b(t_list *node_to_check, t_list *b, t_stats *stats)
+{
+	long long int	absolute_diff;
+	t_list			*node_with_lowest_absolut_diff;
+	int				position_in_b;
+	long long int	temp; // if - int min - + int max = overflow!!!
+
+	position_in_b = 1;
+	node_with_lowest_absolut_diff = b;
+	absolute_diff = *(b->data) - *(node_to_check->data);
+	if (absolute_diff < 0)
+		absolute_diff *= -1;
+	int	i = 0;
+	while (b)
+	{
+		temp = *(b->data) - *(node_to_check->data);
+		if (temp < 0)
+			temp *= -1;
+		i++;
+		if (temp < absolute_diff)
+		{
+			position_in_b = i;
+			absolute_diff = temp;
+			node_with_lowest_absolut_diff = b;
+		}
+		b = b->next;
+	}
+	if (*(node_to_check->data) > *(node_with_lowest_absolut_diff->data))
+	{
+		// node_with musi jit nahoru
+		if (position_in_b < (stats->b->size / 2)) // + 1 // je v prvni pulce
+			position_in_b -= 1; // pujde horem (tedy position_in_b - 1)
+		else // nebo v druhe pulce
+			position_in_b = stats->b->size - position_in_b + 1;// pujde spodem (size - position_in_b + 1)
+	}
+	else
+	{
+		// node_with musi jit dolu
+		if (position_in_b < (stats->b->size / 2)) // - 1 // je v prvni pulce
+			; // pujde horem (tedy position_in_b)
+		else // nebo v druhe pulce
+			position_in_b = stats->b->size - position_in_b; // pujde zpodem (size - position_in_b)
+	}
+	(void)node_with_lowest_absolut_diff;
+	(void)stats;
+	return (position_in_b);
+}
+// find the lowest absolute value of difference between
+// node_to_check and stack be and then i know that
+// the node goes right below or above the node
+// with the lowest absolut value
+
+int	calculate_moves(t_list *node_to_check, t_list *stack_b, t_stats *stats)
+{
+	int	result;
+
+	result = calculate_moves_in_a(node_to_check, stats);
+	result += calculate_moves_in_b(node_to_check, stack_b, stats);
+	return (result);
+}
+
+void	prepare_b(t_list *node_with_least_moves, t_list **b, t_stats *stats)
+{
+	long long int	absolute_diff;
+	t_list			*node_with_lowest_absolut_diff;
+	int				position_in_b;
+	long long int	temp; // if - int min - + int max = overflow!!!
+	t_list			*b_copy;
+
+	b_copy = *b;
+	position_in_b = 1;
+	node_with_lowest_absolut_diff = b_copy;
+	absolute_diff = *(b_copy->data) - *(node_with_least_moves->data);
+	if (absolute_diff < 0)
+		absolute_diff *= -1;
+	int	i = 0;
+	// print_list(*b);
+	while (b_copy)
+	{
+		temp = *(b_copy->data) - *(node_with_least_moves->data);
+		if (temp < 0)
+			temp *= -1;
+		i++;
+		if (temp < absolute_diff)
+		{
+			position_in_b = i;
+			absolute_diff = temp;
+			node_with_lowest_absolut_diff = b_copy;
+		}
+		b_copy = b_copy->next;
+	}
+	// print_list(*b);
+	if (*(node_with_least_moves->data) > *(node_with_lowest_absolut_diff->data))
+	{
+		// node_with musi jit nahoru
+		if (position_in_b < (stats->b->size / 2)) // + 1 // je v prvni pulce
+		{
+			int	j = 0;
+			while (j < position_in_b - 1)
+			{
+				rotate(b, 'b');
+				j++;
+			}
+		}
+			// position_in_b -= 1; // pujde horem (tedy position_in_b - 1)
+		else // nebo v druhe pulce
+		{
+			int	j = 0;
+			while (j < stats->b->size - position_in_b + 1)
+			{
+				reverse_rotate(b, 'b');
+				j++;
+			}
+		}
+			// position_in_b = stats->b->size - position_in_b + 1;// pujde spodem (size - position_in_b + 1)
+	}
+	else
+	{
+		// node_with musi jit dolu
+		if (position_in_b < (stats->b->size / 2)) // - 1 // je v prvni pulce
+		{
+			int	j = 0;
+			while (j < position_in_b)
+			{
+				rotate(b, 'b');
+				j++;
+			}
+		}
+			// pujde horem (tedy position_in_b)
+		else // nebo v druhe pulce
+		{
+			int	j = 0;
+			while (j < stats->b->size - position_in_b)
+			{
+				reverse_rotate(b, 'b');
+				j++;
+			}
+		}
+			// position_in_b = stats->b->size - position_in_b; // pujde zpodem (size - position_in_b)
+	}
+}
+
+void	move_node(t_list *node_with_least_moves, t_list **a, t_list **b, t_stats *stats)
+{
+	int	nodes_position;
+	t_list	*a_copy;
+
+	a_copy = *a;
+	nodes_position = 1;
+	while (a_copy)
+	{
+		if (*(node_with_least_moves->data) == *(a_copy->data))
+			break;
+		a_copy = a_copy->next; // sus
+		nodes_position++;
+	}
+	if (((stats->a->size / 2) + 1) >= nodes_position)
+	{
+		// v prvni pulce
+		while (nodes_position > 1)
+		{
+			rotate(a, 'a');
+			nodes_position--;
 		}
 	}
+	else
+	{
+		while (nodes_position <= stats->a->size)
+		{
+			reverse_rotate(a, 'a');
+			nodes_position++;
+		}
+	}
+	push(a, b, 'b');
+
 }
 
-int	find_middle(int *sorted_array, int size)
+void	move_to_position(t_list *node_with_least_moves, t_list **a, t_list **b, t_stats *stats)
 {
-	int	middle;
+	prepare_b(node_with_least_moves, b, stats);
+	move_node(node_with_least_moves, a, b, stats);
+}
 
-	size /= 2;
-	middle = sorted_array[size];
-	return (middle);
+void	prepare_twice_push(t_list **a, t_list **b, t_stats *stats)
+{
+	push(a, b, 'b');
+	push(a, b, 'b');
+	update_stats(*a, *b, stats);
+}
+
+void	sort3(t_list **list, t_stats *stats)
+{
+	if (stats->a->max == *((*list)->data))
+		rotate(list, 'a');
+	if (stats->a->min == *(ft_lstlast(*list)->data))
+		reverse_rotate(list, 'a');
+	if (*((*list)->data) > *((*list)->next->data))
+		swap(list, 'a');
+	if (stats->a->max == *((*list)->data))
+		rotate(list, 'a');
+	if (is_sorted(*list) == 0)
+	{
+		reverse_rotate(list, 'a');
+		sort3(list, stats);
+	}
+}
+
+void	prepare_a(t_list **a, t_list **b, t_stats *stats)
+{
+	long long int	absolute_diff;
+	t_list			*a_copy;
+
+	a_copy = *a;
+	absolute_diff = *()
+}
+
+void	move_everything_to_a(t_list **a, t_list **b, t_stats *stats)
+{
+	t_list	*b_copy;
+
+	b_copy = *b;
+	while (b_copy)
+	{
+		prepare_a(a, b, stats);
+		push(a, b, 'b');
+		update_stats(*a, *b, stats);
+		b_copy = b_copy->next;
+	}
+}
+
+void	sort_algorithm(t_list **a, t_list **b, t_stats *stats)
+{
+	int		moves_to_correct_position;
+	t_list *node_with_least_moves;
+	t_list *node_to_check;
+	int		temp;
+
+
+	if (stats->a->size > 4)
+	{
+		printf("-----------------------prep-----------------------\n");
+		prepare_twice_push(a, b, stats);
+		print_both_lists(*a, *b);
+	}
+	else if (stats->a->size == 4)
+	{
+		printf("-----------------------prep-----------------------\n");
+		push(a, b, 'b');
+		update_stats(*a, *b, stats);
+		print_both_lists(*a, *b);
+	}
+	else if (stats->a->size == 2)
+	{
+		if (is_sorted(*a) == 0)
+		{
+			swap(a, 'a');
+		}
+		return;
+	}
+	printf("-----------------------start-----------------------\n");
+	while (stats->a->size > 3 && is_sorted(*a) == 0)
+	{
+		node_to_check = *a;
+		node_with_least_moves = *a;
+		moves_to_correct_position = calculate_moves(*a, *b,stats); // should return node_with_least_moves
+		printf("%d takes %d moves to correct position\n", *(node_to_check->data), moves_to_correct_position);
+		node_to_check = (*a)->next;
+		temp = 0;
+		while (node_to_check)
+		{
+			temp = calculate_moves(node_to_check, *b, stats);
+			printf("%d takes %d moves to correct position\n", *(node_to_check->data), temp);
+			if (temp < moves_to_correct_position)
+			{
+				moves_to_correct_position = temp;
+				node_with_least_moves = node_to_check;
+				(void)node_with_least_moves;
+			}
+			node_to_check = node_to_check->next;
+		}
+		move_to_position(node_with_least_moves, a, b, stats);
+		print_both_lists(*a, *b);
+		update_stats(*a, *b, stats);
+	}
+	sort3(a, stats);
+	// move_everything_to_a(a, b, stats);
+	// printf("i run.\n");
 }
 
 int	main(int argc, char **argv)
 {
-	t_list	*list_A;
-	t_list	*list_B;
-	t_list	*new_node;
-	t_list	*previous_node;
-	int		*number_ptr;
-	int		i;
-	// int		*stats_low;
-	// int		*stats_high;
+	t_list	*stack_a;
+	t_list	*stack_b;
+	t_stats	*stats;
 
-	list_A = NULL;
-	list_B = NULL;
-	new_node = NULL;
-	previous_node = NULL;
-	// stats_low = NULL;
-	// stats_high = NULL;
+	stack_a = NULL;
+	stack_b = NULL;
 	if (argc < 3)
-	{
-		printf("There is no numbers to sort.\n"); // check if any number is twice
-		return (1);
-	}
-	int	array[argc];
-	i = 1;
-	while (i < argc)
-	{
-		int	temp;
-		number_ptr = (int *)malloc(sizeof(int));
-		if (number_ptr == NULL)
-		{
-			ft_lstclear(&list_A, &delete); // delete everything
-			return (1);
-		}
-		temp = ft_atoi(argv[i]);
-		*number_ptr = temp;
-		array[i - 1] = temp;
-		new_node = ft_lstnew(number_ptr);
-		if (previous_node)
-			previous_node->next = new_node;
-		else
-			list_A = new_node;
-		previous_node = new_node;
-		i++;
-	}
-	printf("-----------------------array-----------------------\n");
-	print_array(array, argc - 1);
-	printf("\n-----------------------sorted-----------------------\n");
-	sort_array(array, argc - 1);
-	print_array(array, argc - 1);
-	int	middle_number = find_middle(array, argc - 1);
-	printf("\nmiddle number: %d\n", middle_number);
-	printf("size: %d\n", argc - 1);
+		exit(1);
+	stack_a = init_list(argc, argv);
 	printf("-----------------------init-----------------------\n");
-	print_both_lists(list_A, list_B);
-	// printf("-----------------------stats-----------------------\n");
-	// stats_low = find_lowest_number(list_A, stats_low);
-	// stats_high = find_highest_number(list_A, stats_high);
-	// printf("lowest: %d, highest: %d\n", *stats_low, *stats_high);
-	// printf("-----------------------prep-----------------------\n");
-	// push(&list_A, &list_B, 'b');
-	// push(&list_A, &list_B, 'b');
-	// push(&list_A, &list_B, 'b');
-	// push(&list_A, &list_B, 'b');
-	// push(&list_A, &list_B, 'b');
-	// push(&list_A, &list_B, 'b');
-	// // push(&list_A, &list_B, 'b');
-	printf("-----------------------start-----------------------\n");
-	third_try(&list_A, &list_B, middle_number, argc - 1);
-
-	// first_try(list_A, list_B); // 144 ops
-	// second_try(&list_A, &list_B); // 84 ops
+	print_both_lists(stack_a, stack_b);
+	stats = init_stats(stack_a, argc - 1);
+	printf("max: %d\n", stats->a->max);
+	printf("min: %d\n", stats->a->min);
+	printf("size: %d\n", stats->a->size);
+	sort_algorithm(&stack_a, &stack_b, stats);
 	printf("-----------------------done-----------------------\n");
-	print_both_lists(list_A, list_B);
-	// printf("i run.\n");
-	ft_lstclear(&list_A, &delete);
-	ft_lstclear(&list_B, &delete);
+	print_both_lists(stack_a, stack_b);
+	if (is_sorted(stack_a) == 1)
+		printf("stack A is sorted.\n");
+	ft_lstclear(&stack_a, &delete);
+	ft_lstclear(&stack_b, &delete);
+	free(stats->a);
+	free(stats->b);
+	free(stats);
 	return (0);
 }
 
-	// first_try(list_A, list_B);
-	// second_try(&list_A, &list_B);
+// void	do3(t_list **a, t_list **b)
+// {
+// 	printf("do3\n");
+// 	push(a, b, 'b');
+// 	reverse_rotate(a, 'a');
+// 	push(a, b, 'b');
+// 	rotate(b, 'b');
+// }
 
-	// printf("-----------------------while-----------------------\n");
-	// while (list_B)
-	// 	push(&list_B, &list_A, 'a');
-	// print_both_lists(list_A, list_B);
-// ft_lstiter(list_A, &print_list);
-	// printf("%s", is_sorted(list_A));
-	// list_B = ft_lstmap(list_A, &add_30, &delete);
-	// t_list	*second_node = list_B->next;
-	// ft_lstdelone(list_B, &delete);
-	// list_B = second_node;
-	// second_node = list_B->next;
-	// ft_lstdelone(list_B, &delete);
-	// list_B = second_node;
-	// // ft_lstiter(list_B, &print_list);
-	// // printf("%-12d %-12d\n", a, b);
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
-	// printf("-----------------------------------------------\n");
-	// swap(&list_B, 'b');
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
-	// printf("-----------------------------------------------\n");
-	// swap_ss(&list_A, &list_B, 's');
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
-	// printf("-----------------------------------------------\n");
-	// swap(&list_A, 'a');
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
-	// printf("-----------------------------------------------\n");
-	// push(&list_A, &list_B, 'b');
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
-	// printf("-----------------------------------------------\n");
-	// push(&list_B, &list_A, 'a');
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
-	// printf("-----------------------------------------------\n");
-	// push(&list_B, &list_A, 'a');
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
-	// printf("-----------------------------------------------\n");
-	// push(&list_B, &list_A, 'a');
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
-	// printf("-----------------------------------------------\n");
-	// push(&list_A, &list_B, 'b');
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
-	// printf("-----------------------------------------------\n");
-	// push(&list_A, &list_B, 'b');
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
-	// printf("-----------------------------------------------\n");
-	// rotate(&list_A, 'a');
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
-	// printf("-----------------------------------------------\n");
-	// rotate(&list_B, 'b');
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
-	// printf("-----------------------------------------------\n");
-	// rotate_rr(&list_A, &list_B, 'r');
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
-	// printf("-----------------------------------------------\n");
-	// reverse_rotate(&list_A, 'a');
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
-	// printf("-----------------------------------------------\n");
-	// reverse_rotate(&list_B, 'b');
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
-	// printf("-----------------------------------------------\n");
-	// reverse_rotate_rr(&list_A, &list_B, 'r');
-	// printf("-----------------------------------------------\n");
-	// print_both_lists(list_A, list_B);
+// void	do2(t_list **a, t_list **b)
+// {
+// 	printf("do2\n");
+// 	do3(a, b);
+// }
 
+// void	do1(t_list **a, t_list **b)
+// {
+// 	printf("do1\n");
+// 	do2(a, b);
+// }
+
+// printf("-----------------------do1-----------------------\n");
+// do1(&stack_a, &stack_b);
+
+// printf("-----------------------4 push b-----------------------\n");
+// push(&stack_a, &stack_b, 'b');
+// push(&stack_a, &stack_b, 'b');
+// push(&stack_a, &stack_b, 'b');
+// push(&stack_a, &stack_b, 'b');
+// print_both_lists(stack_a, stack_b);
+// printf("-----------------------rotate a-----------------------\n");
+// rotate(&stack_a, 'a');
+// print_both_lists(stack_a, stack_b);
+// printf("-----------------------rotate a-----------------------\n");
+// rotate(&stack_a, 'a');
+// print_both_lists(stack_a, stack_b);
+// printf("-----------------------rotate a-----------------------\n");
+// rotate(&stack_a, 'a');
+// print_both_lists(stack_a, stack_b);
+// printf("-----------------------reverse rotate a-----------------------\n");
+// reverse_rotate(&stack_a, 'a');
+// print_both_lists(stack_a, stack_b);
+// printf("-----------------------reverse rotate a-----------------------\n");
+// reverse_rotate(&stack_a, 'a');
+// print_both_lists(stack_a, stack_b);
+// printf("-----------------------reverse rotate a-----------------------\n");
+// reverse_rotate(&stack_a, 'a');
+// print_both_lists(stack_a, stack_b);
+
+// printf("-----------------------rotate b-----------------------\n");
+// rotate(&stack_b, 'b');
+// print_both_lists(stack_a, stack_b);
+// printf("-----------------------rotate b-----------------------\n");
+// rotate(&stack_b, 'b');
+// print_both_lists(stack_a, stack_b);
+// printf("-----------------------rotate b-----------------------\n");
+// rotate(&stack_b, 'b');
+// print_both_lists(stack_a, stack_b);
+// printf("-----------------------reverse rotate b-----------------------\n");
+// reverse_rotate(&stack_b, 'b');
+// print_both_lists(stack_a, stack_b);
+// printf("-----------------------reverse rotate b-----------------------\n");
+// reverse_rotate(&stack_b, 'b');
+// print_both_lists(stack_a, stack_b);
+// printf("-----------------------reverse rotate b-----------------------\n");
+// reverse_rotate(&stack_b, 'b');
