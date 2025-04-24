@@ -6,40 +6,34 @@
 /*   By: jankruchina <jankruchina@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 10:58:42 by jankruchina       #+#    #+#             */
-/*   Updated: 2025/04/20 11:17:17 by jankruchina      ###   ########.fr       */
+/*   Updated: 2025/04/24 00:17:50 by jankruchina      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
+
+void	write_instruction(char first_letter, char last_letter)
+{
+	write(STDOUT_FILENO, &first_letter, 1);
+	write(STDOUT_FILENO, &last_letter, 1);
+	write(STDOUT_FILENO, "\n", 1);
+}
 
 void	swap(t_list **list, char c)
 {
 	int	temp;
 
 	if (list == NULL)
-		return;
+		return ;
 	if (*list == NULL)
-		return;
+		return ;
 	if ((*list)->next == NULL)
-		return;
+		return ;
 	temp = *(*list)->data;
 	*(*list)->data = *(*list)->next->data;
 	*(*list)->next->data = temp;
 	if (c == 'a' || c == 'b')
-		printf("s%c\n", c);
-}
-
-void	swap_ss(t_list **A, t_list **B, char c)
-{
-	if (A == NULL || B == NULL)
-		return;
-	if (*A == NULL || *B == NULL)
-		return;
-	if ((*A)->next == NULL || (*B)->next == NULL)
-		return;
-	swap(A, c);
-	swap(B, c);
-	printf("s%c\n", c);
+		write_instruction('s', c);
 }
 
 void	push(t_list **from, t_list **in, char c)
@@ -47,15 +41,15 @@ void	push(t_list **from, t_list **in, char c)
 	t_list	*temp;
 
 	if (from == NULL)
-		return;
+		return ;
 	if (*from == NULL)
-		return;
+		return ;
 	if (in == NULL)
-		return;
+		return ;
 	temp = (*from)->next;
 	ft_lstadd_front(in, *from);
 	*from = temp;
-	printf("p%c\n", c);
+	write_instruction('p', c);
 }
 
 void	rotate(t_list **list, char c)
@@ -64,25 +58,18 @@ void	rotate(t_list **list, char c)
 	t_list	*last_node;
 
 	if (list == NULL)
-		return;
+		return ;
 	if (*list == NULL)
-		return;
+		return ;
 	if ((*list)->next == NULL)
-		return;
+		return ;
 	second_node = (*list)->next;
 	last_node = ft_lstlast(*list);
 	(*list)->next = NULL;
 	last_node->next = *list;
 	*list = second_node;
 	if (c == 'a' || c == 'b')
-		printf("r%c\n", c);
-}
-
-void	rotate_rr(t_list **list_A, t_list **list_B, char c)
-{
-	rotate(list_A, c);
-	rotate(list_B, c);
-	printf("r%c\n", c);
+		write_instruction('r', c);
 }
 
 void	reverse_rotate(t_list **list, char c)
@@ -92,29 +79,47 @@ void	reverse_rotate(t_list **list, char c)
 	int		size;
 
 	if (list == NULL)
-		return;
+		return ;
 	if (*list == NULL)
-		return;
+		return ;
 	if ((*list)->next == NULL)
-		return;
+		return ;
 	last_node = ft_lstlast(*list);
 	size = ft_lstsize(*list);
 	second_to_last_node = *list;
-	while (size > 2)
-	{
+	while (size-- > 2)
 		second_to_last_node = second_to_last_node->next;
-		size--;
-	}
 	last_node->next = *list;
 	*list = last_node;
 	second_to_last_node->next = NULL;
 	if (c == 'a' || c == 'b')
-		printf("rr%c\n", c);
+	{
+		write(STDOUT_FILENO, "r", 1);
+		write_instruction('r', c);
+	}
 }
 
-void	reverse_rotate_rr(t_list **list_A, t_list **list_B, char c)
-{
-	reverse_rotate(list_A, c);
-	reverse_rotate(list_B, c);
-	printf("rr%c\n", c);
-}
+// void	reverse_rotate_rr(t_list **list_A, t_list **list_B, char c)
+// {
+// 	reverse_rotate(list_A, c);
+// 	reverse_rotate(list_B, c);
+// 	printf("rr%c\n", c);//
+// }
+// void	swap_ss(t_list **A, t_list **B, char c)
+// {
+// 	if (A == NULL || B == NULL)
+// 		return;
+// 	if (*A == NULL || *B == NULL)
+// 		return;
+// 	if ((*A)->next == NULL || (*B)->next == NULL)
+// 		return;
+// 	swap(A, c);
+// 	swap(B, c);
+// 	printf("s%c\n", c); //
+// }
+// void	rotate_rr(t_list **list_A, t_list **list_B, char c)
+// {
+// 	rotate(list_A, c);
+// 	rotate(list_B, c);
+// 	printf("r%c\n", c); //
+// }

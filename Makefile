@@ -3,24 +3,27 @@ NAME		= push_swap
 CC			= cc
 CFLAGS		= -Wall -Wextra -Werror
 
-SRCS		= push_swap.c instructions.c list_functions.c
-
 HEADER		= push_swap.h
 
-$(NAME)		: $(SRCS) $(HEADER)
-		@$(CC) $(CFLAGS) $(SRCS) -o $(NAME)
-		@echo "Compilation complete"
+SRCS		= push_swap.c cleaning.c compute_moves.c init_list.c \
+		instructions.c list.c rotate.c safety.c stats.c utils.c
+
+OBJS		= $(SRCS:.c=.o)
+
+$(NAME)		: $(OBJS) $(HEADER)
+		$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
+
+%.o			: %.c $(HEADER)
+		$(CC) $(CFLAGS) -c $< -o $@
 
 all			: $(NAME)
 
 clean		:
-		@echo "Nothing to clean."
+		rm -f $(OBJS)
 
-fclean		:
-		@rm -f $(NAME)
-		@echo "Cleaned up"
+fclean		: clean
+		rm -f $(NAME)
 
 re			: fclean all
-		@echo "Recompiled"
 
 .PHONY		: all clean fclean re
