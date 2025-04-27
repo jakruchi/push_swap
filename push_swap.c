@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jankruchina <jankruchina@student.42.fr>    +#+  +:+       +#+        */
+/*   By: jakruchi <jakruchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 14:45:33 by jankruchina       #+#    #+#             */
-/*   Updated: 2025/04/24 01:35:36 by jankruchina      ###   ########.fr       */
+/*   Updated: 2025/04/27 14:51:26 by jakruchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,6 @@ void	move_everything_to_a(t_list **a, t_list **b, t_stats *stats)
 {
 	t_list	*b_copy;
 
-	// --------------BUG--------------
-	// kdyz jde maximum na minimum
-	// ./push_swap 2147483647 32 1 7654 983 -2147483648 | ./checker_Mac 2147483647 32 1 7654 983 -2147483648
-	// cisla, co to rozbijou
-	// 2094190294 -1359041040 23273935 -1091272855 1202745491 -599686855 1927501462 -1047333256 -923811976 -2120394654
-	// 2147483647 32 1 7654 983 -2147483648
 	if (stats->b->size > 0)
 		final_rotate(b, 'b', stats->b->max, stats->b->size);
 	b_copy = *b;

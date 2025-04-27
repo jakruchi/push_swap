@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   compute_moves.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jankruchina <jankruchina@student.42.fr>    +#+  +:+       +#+        */
+/*   By: jakruchi <jakruchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 18:05:05 by jankruchina       #+#    #+#             */
-/*   Updated: 2025/04/24 01:57:24 by jankruchina      ###   ########.fr       */
+/*   Updated: 2025/04/27 14:51:05 by jakruchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,13 @@ t_list	*get_lowest_dif_node(t_list *node_to_check, t_list *lst, int *position)
 	int				i;
 
 	lowest_diff_node = lst;
-	absolute_diff = (long long int)*(lst->data) - (long long int)*(node_to_check->data);
+	absolute_diff = (long long)*(lst->data) - (long long)*(node_to_check->data);
 	if (absolute_diff < 0)
 		absolute_diff *= -1;
 	i = 0;
 	while (lst)
 	{
-		temp = (long long int)*(lst->data) - (long long int)*(node_to_check->data);
+		temp = (long long)*(lst->data) - (long long)*(node_to_check->data);
 		if (temp < 0)
 			temp *= -1;
 		i++;
